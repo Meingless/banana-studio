@@ -11,7 +11,7 @@ Unexpected lossy fallback preserves original bytes rather than silently flatteni
 The shared attachment/saved-person compressor reuses that implementation and
 retains strict decode/error rejection. Its dimension cap applies to the longest
 side, so very tall images may be smaller than the prior width-only helper.
-All thirteen reference-to-text call sites pass the returned bytes and MIME
+All reference-to-text call sites pass the returned bytes and MIME
 together, including Brainstorm, Enhance, variations, video frames and H3 prompts.
 The attachment caller also updates its stored MIME. PNG originals can be larger
 than JPEG, so text requests progressively resize and reject images that still
