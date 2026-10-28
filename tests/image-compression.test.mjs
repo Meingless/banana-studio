@@ -1,7 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { build } from 'esbuild';
-const bundle=await build({entryPoints:[new URL('../src/services/imageCompression.ts',import.meta.url).pathname],bundle:true,write:false,format:'esm',platform:'node'});
+import {fileURLToPath} from 'node:url';
+const bundle=await build({entryPoints:[fileURLToPath(new URL('../src/services/imageCompression.ts',import.meta.url))],bundle:true,write:false,format:'esm',platform:'node'});
 const {compressBase64Image,imageDataMimeType}=await import('data:text/javascript;base64,'+Buffer.from(bundle.outputFiles[0].text).toString('base64'));
 const original={Image:globalThis.Image,document:globalThis.document};
 function canvasFixture({encodedMime,fail=false}={}){
