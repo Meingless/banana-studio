@@ -24,7 +24,29 @@ recompression/rejection. The browser fixture tests actual canvas encode/decode:
 PNG, WebP and the attachment/saved-person path retain alpha 0/255 for a synthetic
 transparent/opaque pixel pair. No provider call or user media is required.
 
-Pending acceptance coverage includes full product reference upload/storage and
-paid provider behavior on large, high-detail transparent images, plus physical
-Windows UI. Existing provider-supported MIME allowlists remain unchanged.
+Full synthetic local reference upload/storage acceptance is completed below.
+Paid provider behavior and physical Windows UI remain unrun. Existing provider-supported MIME allowlists remain unchanged.
 Use tests/ui/image-alpha.html for the synthetic review fixture.
+
+## Full synthetic local pipeline (2026-10-28)
+
+`node scripts/serve-ui-acceptance.mjs alpha` bundles the real compression,
+storage, gallery and saved-person code. Its temporary local HTTP server uses the
+actual LocalWorkspace SQLite/media implementation and authenticated bootstrap.
+Browser requests are restricted to self. No provider operation/account is used.
+
+2048×2048 PNG, 2048×2048 WebP and high-detail 4096×4096 PNG, each containing fully
+transparent and alpha-128 pixels, were resized to 1568 px, uploaded over HTTP,
+retrieved as their actual PNG/WebP MIME and extension, saved to the reference
+gallery and retrieved with alpha 0/128 intact. Stored bytes were respectively
+5,055,635; 1,018,534; 4,747,934. Saving the three URLs as an independent saved
+person snapshot and reading it also preserved MIME and alpha. After restarting
+the local server on another port with the same database, all three references
+and their transparent pixels remained readable.
+
+The test bundler exposes the actual private request-budget function only in
+this test bundle; production exports remain unchanged. Four high-detail PNG
+inputs shrank from 38,986,432 to 2,474,752 base64 characters, below the existing
+3,800,000 budget, with PNG MIME and alpha intact. Existing automated tests cover
+rejection when resizing still cannot fit. This is synthetic local acceptance,
+not a claim about cloud storage or real paid-provider behavior.
