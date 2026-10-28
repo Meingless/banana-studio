@@ -4,11 +4,11 @@ import { build } from 'esbuild';
 import React from 'react';
 import { renderToString, renderToPipeableStream } from 'react-dom/server';
 import { PassThrough } from 'node:stream';
-import { pathToFileURL } from 'node:url';
+import { pathToFileURL, fileURLToPath } from 'node:url';
 import path from 'node:path';
 import {createRequire} from 'node:module';
 const require=createRequire(import.meta.url);
-const root=new URL('..',import.meta.url).pathname;
+const root=fileURLToPath(new URL('..',import.meta.url));
 const result=await build({entryPoints:[path.join(root,'src/components/DeferredAdminPanel.tsx')],bundle:true,write:false,format:'esm',platform:'node',plugins:[{name:'synthetic-admin',setup(b){
  b.onResolve({filter:/^react(?:\/.*)?$/},args=>({path:pathToFileURL(require.resolve(args.path)).href,external:true}));
  b.onResolve({filter:/\/AdminPanel$/},()=>({path:'admin',namespace:'fixture'}));
