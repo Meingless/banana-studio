@@ -10,7 +10,7 @@ export const messages = {
     closeBrainstorm: 'Close Brainstorm', templates: 'Templates', templateName: 'Template name…',
     saveSettings: 'Save current settings', updateSettings: 'Update with current settings', delete: 'Delete',
     imageGeneration: 'Image generation', action: 'Action', preparing: 'Preparing…',
-    welcome: 'Welcome, {name}',
+    welcome: 'Welcome, {name}', savingLanguage: 'Saving language…', languageSaveError: 'Language changed for this session, but could not be saved. Retry', retryLanguage: 'Retry language save',
   },
   tr: {
     localWorkspace: 'Yerel çalışma alanı · Bu bilgisayar', workspace: 'Çalışma alanın',
@@ -20,14 +20,15 @@ export const messages = {
     closeBrainstorm: 'Fikir panelini kapat', templates: 'Şablonlar', templateName: 'Şablon adı…',
     saveSettings: 'Geçerli ayarları kaydet', updateSettings: 'Geçerli ayarlarla güncelle', delete: 'Sil',
     imageGeneration: 'Görsel üretimi', action: 'İşlem', preparing: 'Hazırlanıyor…',
-    welcome: 'Hoş geldin, {name}',
+    welcome: 'Hoş geldin, {name}', savingLanguage: 'Dil kaydediliyor…', languageSaveError: 'Dil bu oturumda değişti, ancak kaydedilemedi. Yeniden dene', retryLanguage: 'Dili yeniden kaydet',
   },
 } as const;
 export type Language = keyof typeof messages;
 export type MessageKey = keyof typeof messages.en;
 export const LANGUAGE_STORAGE_KEY = 'banana.ui.language.v1';
 export const validLanguage = (value: unknown): value is Language => value === 'tr' || value === 'en';
-export function initialLanguage(storage: Pick<Storage, 'getItem'> | undefined, browserLanguage: string): Language {
+export function initialLanguage(storage: Pick<Storage, 'getItem'> | undefined, browserLanguage: string, serverLanguage?: unknown): Language {
+  if (validLanguage(serverLanguage)) return serverLanguage;
   try { const saved = storage?.getItem(LANGUAGE_STORAGE_KEY); if (validLanguage(saved)) return saved; } catch { /* Private mode can deny storage. */ }
   return /^tr(?:-|$)/i.test(browserLanguage) ? 'tr' : 'en';
 }

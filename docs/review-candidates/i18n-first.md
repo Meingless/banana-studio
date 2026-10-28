@@ -26,3 +26,28 @@ languages, selection persistence after reload and the primary layout. All
 application requests are synthetic. Translation completeness, smaller-window
 layouts and physical Windows acceptance still require review before a final
 product-wide language release.
+
+## Desktop preference persistence acceptance (2026-10-28)
+
+Browser localStorage is scoped to its origin and alone does not survive the
+local desktop server choosing a new port. This draft now stores only the
+validated `tr`/`en` preference in the existing local SQLite settings table, and
+includes it in authenticated workspace bootstrap config. There is no migration,
+cloud schema change or live setting operation. Local HTTP cookie/Host/Origin
+checks remain intact. A valid server preference takes precedence over stale
+origin-local cache. Cloud mode retains the existing browser preference behavior.
+
+Writes are serialized in click order. A failed latest write shows a retryable
+message and keeps the in-session choice; it never claims a successful durable
+save. Regression tests execute the actual callback for ordering/failure/retry,
+and the actual local HTTP server for invalid/cross-origin rejection and
+preference bootstrap on a new port.
+
+`node scripts/serve-ui-acceptance.mjs i18n` creates a marked temporary local
+workspace. In the real browser fixture, Turkish and English each survived a
+new server process, reopening the same SQLite database at a different loopback
+port with empty localStorage for that origin. Stopping the server made save
+failure visible; restarting it and Retry saved the choice, and another process/
+port restart restored Turkish. Native app packaging and physical Windows UI
+were not run. This remains only the documented first translation slice; no
+full-interface translation or merge is implied.
