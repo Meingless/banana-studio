@@ -31,12 +31,12 @@ const cli=await import('data:text/javascript;base64,'+Buffer.from(compiled.outpu
 const directory=fs.mkdtempSync(path.join(os.tmpdir(),'banana-cli-fixture-'));
 const old={PATH:process.env.PATH,BANANA_RUNTIME:process.env.BANANA_RUNTIME,TMPDIR:process.env.TMPDIR,BANANA_SUBSCRIPTION_CLI_PREVIEW:process.env.BANANA_SUBSCRIPTION_CLI_PREVIEW};
 process.env.PATH=directory;process.env.BANANA_RUNTIME='local';process.env.BANANA_SUBSCRIPTION_CLI_PREVIEW='true';
-for(const executable of ['claude','codex'])fs.writeFileSync(path.join(directory,executable),'synthetic; never executed',{mode:0o700});
+for(const executable of ['claude','codex'])fs.writeFileSync(path.join(directory,executable+(process.platform==='win32'?'.exe':'')),'synthetic; never executed',{mode:0o700});
 const request=(extra={})=>({prompt:'synthetic " & $() prompt',system:'synthetic system',effort:'max',images:[],signal:new AbortController().signal,...extra});
 test.after(()=>{for(const [key,value]of Object.entries(old)){if(value===undefined)delete process.env[key];else process.env[key]=value;}fs.rmSync(directory,{recursive:true,force:true});delete globalThis.__bananaCliFixture;});
 
 test('native CLI discovery handles the packaged Mac PATH and rejects Windows cmd shims',()=>{
- const home='/synthetic/home',claude=path.join(home,'.local','bin','claude');fixture.executables.add(claude);
+ const home='/synthetic/home',claude=path.posix.join(home,'.local','bin','claude');fixture.executables.add(claude);
  assert.equal(cli.resolveCliExecutable('claude-cli',{PATH:'/usr/bin:/bin'},'darwin',home),claude);
  const winHome='C:\\Synthetic User',native=path.win32.join(winHome,'.local','bin','codex.exe');fixture.executables.add(native);
  assert.equal(cli.resolveCliExecutable('codex-cli',{PATH:'C:\\Windows\\System32'},'win32',winHome),native);

@@ -16,7 +16,7 @@ export class CliError extends Error {
 
 // Resolve native executables directly. Never run .cmd/.bat through a shell.
 export function resolveCliExecutable(provider:CliProvider,environment:NodeJS.ProcessEnv=process.env,platform:NodeJS.Platform=process.platform,home=os.homedir()):string|undefined {
-  const windows=platform==='win32',p=windows?path.win32:path;
+  const windows=platform==='win32',p=windows?path.win32:path.posix;
   const directories=[...(environment.PATH||'').split(windows?';':':'),p.join(home,'.local','bin')];
   if(windows){if(environment.LOCALAPPDATA)directories.push(p.join(environment.LOCALAPPDATA,'Microsoft','WinGet','Links'));}
   else directories.push('/opt/homebrew/bin','/usr/local/bin',p.join(home,'.npm-global','bin'));
