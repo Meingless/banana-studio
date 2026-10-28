@@ -297,7 +297,7 @@ class StudioWindow(Gtk.ApplicationWindow):
         download.connect('failed', failed)
 
     def show_keys(self):
-        if self.keys_open or not self.ready:
+        if self.keys_open or not self.ready or self.process is None:
             return
         self.keys_open = True
         dialog = Gtk.Dialog(title='Provider API Keys', transient_for=self, modal=True)
